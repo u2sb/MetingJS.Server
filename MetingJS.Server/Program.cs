@@ -16,9 +16,7 @@ namespace MetingJS.Server
 				{
 					webBuilder.UseStartup<Startup>().ConfigureKestrel((context, options) =>
 					{
-#if DEBUG || WIN
-						options.ListenAnyIP(5001);
-#elif LINUX
+#if LINUX
                         if (File.Exists("/tmp/metingJS.Server.sock")) File.Delete("/tmp/metingJS.Server.sock");
                         options.ListenUnixSocket("/tmp/metingJS.Server.sock");
 #endif

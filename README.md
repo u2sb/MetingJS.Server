@@ -15,11 +15,13 @@
 
 ### 反向代理
 
-在 Windows 服务器上程序运行端口为 5001 ，暂时不能修改（我猜也没多少人会在 Windows 服务器上跑这个东西）， Linux 使用 Unix 域套接字通信，需要代理 `unix:/tmp/metingJS.Server.sock` ，暂时不支持自定义
+在 Windows 服务器上程序运行端口为 5001 ，需要修改的请修改配置文件中的 `Urls` 选项，多个端口使用 `;` 分割。或者在启动时使用 `--urls` 参数，例如 `./MetingJS.Server.exe --urls http://localhost:8000`。
+
+Linux 使用 Unix 套接字通信，需要代理 `unix:/tmp/metingJS.Server.sock` ，暂不支持自定义。
 
 ### API
 
-理论上完全兼容 MetingJS ，只需要将 MetingJS 的后端配置修改为你的就可以了
+理论上完全兼容 MetingJS ，只需要将 MetingJS 的后端配置修改为你的就可以了。
 
 ## Q&A
 
