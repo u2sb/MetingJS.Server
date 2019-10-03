@@ -8,6 +8,7 @@ using static MetingJS.Server.Models.QueryType;
 namespace MetingJS.Server.Controllers
 {
 	[Route("api/music")]
+    [Route("api.php")]
 	[ApiController]
 	public class MusicController : ControllerBase
 	{

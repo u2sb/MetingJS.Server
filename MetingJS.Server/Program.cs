@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+#if LINUX
+using System.IO;
+#endif
 
 namespace MetingJS.Server
 {
