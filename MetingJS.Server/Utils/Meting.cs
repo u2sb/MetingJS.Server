@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using Meting4Net.Core;
 using MetingJS.Server.Models;
+using MMeting = Meting4Net.Core.Meting;
 using static MetingJS.Server.Models.AppSettings;
 using static MetingJS.Server.Models.QueryType;
 
@@ -10,28 +11,17 @@ namespace MetingJS.Server.Utils
 {
 	public class Meting : IMeting
 	{
-		private readonly Meting4Net.Core.Meting _meting;
-
-		public Meting()
-		{
-			_meting = new Meting4Net.Core.Meting
-			{
-				TryCount = 12
-			};
-		}
 
 		public string GetLrc(ServerProvider server, string id)
 		{
-//			_meting.Server = server;
-//			var lrc = _meting.LyricObj(id);
-			var lrc = new Meting4Net.Core.Meting(server) {TryCount = 20}.LyricObj(id);
+			var lrc = new MMeting(server) {TryCount = 20}.LyricObj(id);
 			return lrc.lyric;
 		}
 
 		public string GetPic(ServerProvider server, string id)
 		{
-			_meting.Server = server;
-			var pic = _meting.PicObj(id, 90);
+			var meting = new MMeting(server) {TryCount = 10};
+			var pic = meting.PicObj(id, 90);
 			var picUrl = pic.url;
 			if (!string.IsNullOrEmpty(picUrl) && Config.Replace.Pic != null)
 				picUrl = Replace(picUrl, Config.Replace.Pic);
@@ -40,8 +30,8 @@ namespace MetingJS.Server.Utils
 
 		public string GetUrl(ServerProvider server, string id)
 		{
-			_meting.Server = server;
-			var url = _meting.UrlObj(id);
+			var meting = new MMeting(server) { TryCount = 10 };
+			var url = meting.UrlObj(id);
 			var urlUrl = url.url;
 			if (!string.IsNullOrEmpty(urlUrl) && Config.Replace.Url != null)
 				urlUrl = Replace(urlUrl, Config.Replace.Url);
@@ -50,24 +40,24 @@ namespace MetingJS.Server.Utils
 
 		public string Search(ServerProvider server, QueryType type, string id)
 		{
-			_meting.Server = server;
+			var meting = new MMeting(server) { TryCount = 10 };
 			var list = new List<MusicList>();
 			switch (type)
 			{
 				case Album:
-					list = _meting.AlbumObj(id).Select(s => new MusicList(s, server)).ToList();
+					list = meting.AlbumObj(id).Select(s => new MusicList(s, server)).ToList();
 					break;
 				case Artist:
-					list = _meting.ArtistObj(id).Select(s => new MusicList(s, server)).ToList();
+					list = meting.ArtistObj(id).Select(s => new MusicList(s, server)).ToList();
 					break;
 				case PlayList:
-					list = _meting.PlaylistObj(id).Select(s => new MusicList(s, server)).ToList();
+					list = meting.PlaylistObj(id).Select(s => new MusicList(s, server)).ToList();
 					break;
 				case QueryType.Search:
-					list = _meting.SearchObj(id).Select(s => new MusicList(s, server)).ToList();
+					list = meting.SearchObj(id).Select(s => new MusicList(s, server)).ToList();
 					break;
 				case Song:
-					list = new List<MusicList> {new MusicList(_meting.SongObj(id), server)};
+					list = new List<MusicList> {new MusicList(meting.SongObj(id), server)};
 					break;
 			}
 

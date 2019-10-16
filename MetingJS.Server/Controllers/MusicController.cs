@@ -31,17 +31,16 @@ namespace MetingJS.Server.Controllers
 
 			if (string.IsNullOrEmpty(id))
 			{
-				Response.StatusCode = 404;
+				Response.StatusCode = 400;
 				return null;
 			}
-
 			if (Enum.TryParse(typeof(ServerProvider), server,true, out var o))
 			{
 				serverProvider = (ServerProvider) o;
 			}
 			else
 			{
-				Response.StatusCode = 404;
+				Response.StatusCode = 400;
 				return null;
 			}
 
@@ -51,7 +50,7 @@ namespace MetingJS.Server.Controllers
 			}
 			else
 			{
-				Response.StatusCode = 404;
+				Response.StatusCode = 400;
 				return null;
 			}
 
