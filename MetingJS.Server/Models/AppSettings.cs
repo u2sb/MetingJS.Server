@@ -4,8 +4,6 @@ namespace MetingJS.Server.Models
 {
 	public class AppSettings
 	{
-		public static AppSettings Config { get; set; }
-
 		public AppSettings(IConfiguration configuration)
 		{
 			configuration.Bind(this);
