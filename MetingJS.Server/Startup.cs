@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static MetingJS.Server.Models.AppSettings;
 
 namespace MetingJS.Server
 {
@@ -14,7 +13,6 @@ namespace MetingJS.Server
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
-			Config = new AppSettings(configuration);
 		}
 
 		public IConfiguration Configuration { get; }
@@ -22,26 +20,22 @@ namespace MetingJS.Server
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<AppSettings>(new AppSettings(Configuration));
 			services.AddSingleton<IMeting, Meting>();
 			services.AddControllers();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettings appSettings)
 		{
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
-				app.UseCors(builder =>
-					builder.WithOrigins(Config.WithOrigins).WithMethods("GET", "OPTIONS")
-						.AllowAnyHeader().AllowCredentials());
 			}
-			else
-			{
-				app.UseCors(builder =>
-					builder.WithOrigins(Config.WithOrigins).WithMethods("GET", "OPTIONS")
-						.AllowAnyHeader().AllowCredentials());
-			}
+
+			app.UseCors(builder =>
+				builder.WithOrigins(appSettings.WithOrigins).SetIsOriginAllowedToAllowWildcardSubdomains().WithMethods("GET", "OPTIONS")
+					.AllowAnyHeader());
 
 			app.UseRouting();
 

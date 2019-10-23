@@ -1,24 +1,18 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Meting4Net.Core;
 using Meting4Net.Core.Models.Standard;
-using static MetingJS.Server.Models.AppSettings;
 
 namespace MetingJS.Server.Models
 {
 	public class MusicList
 	{
-		public MusicList()
-		{
-		}
-
-		public MusicList(Music_search_item aItem, ServerProvider server)
+		public MusicList(Music_search_item aItem, ServerProvider server, AppSettings appSettings)
 		{
 			Title = aItem.name;
 			Author = string.Join(" / ", aItem.artist);
-			Url = $"{Config.Url}?server={server:G}&type=url&id={aItem.url_id}";
-			Pic = $"{Config.Url}?server={server:G}&type=pic&id={aItem.pic_id}";
-			Lrc = $"{Config.Url}?server={server:G}&type=lrc&id={aItem.lyric_id}";
+			Url = $"{appSettings.Url}?server={server:G}&type=url&id={aItem.url_id}";
+			Pic = $"{appSettings.Url}?server={server:G}&type=pic&id={aItem.pic_id}";
+			Lrc = $"{appSettings.Url}?server={server:G}&type=lrc&id={aItem.lyric_id}";
 		}
 
 		[JsonPropertyName("title")] public string Title { get; set; }
