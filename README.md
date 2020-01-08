@@ -26,8 +26,8 @@ Linux 使用 Unix 套接字通信，需要代理 `unix:/tmp/metingJS.Server.sock
 ## Q&A
 
 #### 有没有搭建好的后端供大家使用？  
-`https://sm.sm9.top/api/music`
-`https://am.sm9.top/api.php`
+`https://sm.sm9.top/api/music`  
+`https://sm.sm9.top/api.php`
 
 上面两个都没有配置跨域，不自己搞代理的话不能用，仅仅是用于演示，不能用于生产环境。
 
