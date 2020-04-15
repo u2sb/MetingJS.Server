@@ -10,10 +10,10 @@ namespace MetingJS.Server.Models
             configuration.Bind(this);
         }
 
-        public string[] WithOrigins { get; } = new string[0];
-        public ServerProvider DefaultServerProvider { get; } = ServerProvider.Tencent;
-        public string Url { get; } = "";
-        public Replace Replace { get; } = new Replace();
+        public string[] WithOrigins { get; set; }
+        public ServerProvider DefaultServerProvider { get; set; } = ServerProvider.Tencent;
+        public string Url { get; set; }
+        public Replace Replace { get; set; } = new Replace();
     }
 
     public class Replace
