@@ -1,24 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
+using Meting4Net.Core;
+using Microsoft.Extensions.Configuration;
 
 namespace MetingJS.Server.Models
 {
-	public class AppSettings
-	{
-		public AppSettings(IConfiguration configuration)
-		{
-			configuration.Bind(this);
-		}
+    public class AppSettings
+    {
+        public AppSettings(IConfiguration configuration)
+        {
+            configuration.Bind(this);
+        }
 
-		public string AllowedHosts { get; set; }
-		public string[] WithOrigins { get; set; }
-		public string Url { get; set; }
-		public Replace Replace { get; set; }
+        public string[] WithOrigins { get; } = new string[0];
+        public ServerProvider DefaultServerProvider { get; } = ServerProvider.Tencent;
+        public string Url { get; } = "";
+        public Replace Replace { get; } = new Replace();
+    }
 
-	}
-
-	public class Replace
-	{
-		public string[][] Url { get; set; }
-		public string[][] Pic { get; set; }
-	}
+    public class Replace
+    {
+        public string[][] Url { get; set; }
+        public string[][] Pic { get; set; }
+    }
 }
