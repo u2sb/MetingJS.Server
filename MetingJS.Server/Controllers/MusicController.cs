@@ -22,6 +22,7 @@ namespace MetingJS.Server.Controllers
         [HttpGet]
         public ActionResult<string> Get([FromQuery] QueryModel query)
         {
+
             if (string.IsNullOrEmpty(query.Id)) return BadRequest();
 
             var meting = query.Server.Equals(_settings.DefaultServerProvider)
