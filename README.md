@@ -40,23 +40,27 @@ Linux 使用 Unix 套接字通信，需要代理 `unix:/tmp/metingJS.Server.sock
 
 请求地址为(Meting填写下方地址) ：
 
-`https://xxxxxxxxxxxx.cn-shanghai.fc.aliyuncs.com/xxxx-xx-xx/proxy/MetingJS/GetMusic/api/music`
+`https://xxxxxxxxxxxx.cn-shanghai.fc.aliyuncs.com/xxxx-xx-xx/proxy/MetingJS/GetMusic/api/music` 或  
 `https://xxxxxxxxxxxx.cn-shanghai.fc.aliyuncs.com/xxxx-xx-xx/proxy/MetingJS/GetMusic/api.php`
 
 例如
-`https://xxxxxxxxxxxx.cn-shanghai.fc.aliyuncs.com/xxxx-xx-xx/proxy/MetingJS/GetMusic/api.php?server=Tencent&type=lrc&id=0008yfgO0dmovi`
+`https://xxxxxxxxxxxx.cn-shanghai.fc.aliyuncs.com/xxxx-xx-xx/proxy/MetingJS/GetMusic/api/music?server=Tencent&type=lrc&id=0008yfgO0dmovi`
 
-![函数设置](https://s1.ax1x.com/2020/04/15/JiepY8.png)
-![触发器设置](https://s1.ax1x.com/2020/04/15/JiZxTP.png)
-
+![函数设置](https://s1.ax1x.com/2020/04/15/JiepY8.png)  
+![触发器设置](https://s1.ax1x.com/2020/04/15/JiZxTP.png)  
+![测试结果](https://s1.ax1x.com/2020/04/16/JFCCg1.png)
 
 ## Q&A
 
 #### 有没有搭建好的后端供大家使用？
-`https://sm.sm9.top/api/music`
+`https://sm.sm9.top/api/music`  
 `https://sm.sm9.top/api.php`
 
 上面两个都没有配置跨域，不自己搞代理的话不能用，仅仅是用于演示，不能用于生产环境。
+
+云函数版请勿用于生成环境，如果不能访问就代表我已经把这个函数删了
+
+`https://1384366657049717.cn-shanghai.fc.aliyuncs.com/2016-08-15/proxy/MetingJS/GetMusic/api/music`
 
 #### 如果没有服务器怎么办？
 
@@ -64,10 +68,6 @@ Linux 使用 Unix 套接字通信，需要代理 `unix:/tmp/metingJS.Server.sock
 
 #### 有些歌曲获取失败是怎么回事？
 按理说付费歌曲都不能播放，某个平台已经下架的歌曲也不能播放。
-
-**强烈不推荐使用网易云音乐平台！！！**
-**强烈不推荐使用网易云音乐平台！！！**
-**强烈不推荐使用网易云音乐平台！！！**
 
 ## 感谢
 
