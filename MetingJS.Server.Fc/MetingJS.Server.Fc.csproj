@@ -14,10 +14,20 @@
 
   <ItemGroup>
     <PackageReference Include="Aliyun.Serverless.Core.Http" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MetingJS.Server\MetingJS.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

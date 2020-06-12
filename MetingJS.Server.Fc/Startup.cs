@@ -1,13 +1,12 @@
-#if NETCORE31
 using MetingJS.Server.Models;
 using MetingJS.Server.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-namespace MetingJS.Server
+namespace MetingJS.Server.Fc
 {
     public class Startup
     {
@@ -21,27 +20,25 @@ namespace MetingJS.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton(new AppSettings(Configuration));
             services.AddScoped<Meting>();
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettings appSettings)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, AppSettings appSettings)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             app.UseCors(builder =>
                     builder.WithOrigins(appSettings.WithOrigins).SetIsOriginAllowedToAllowWildcardSubdomains()
                            .WithMethods("GET", "OPTIONS")
                            .AllowAnyHeader());
 
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseMvc();
         }
     }
 }
-
-#endif
-

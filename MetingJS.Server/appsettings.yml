@@ -1,0 +1,17 @@
+KestrelSettings:
+  Port:
+    - 5000
+    - 5001
+  UnixSocketPath:
+    - "/tmp/metingJS.Server.sock"
+AllowedHosts: "*"
+WithOrigins:
+  - "*"
+Url: ""
+DefaultServerProvider: "Tencent"
+Replace:
+  Url:
+    - ["http://", "https://"]
+    - ["ws.stream.qqmusic.qq.com", "dl.stream.qqmusic.qq.com"]
+  Pic:
+    - ["http://", "https://"]

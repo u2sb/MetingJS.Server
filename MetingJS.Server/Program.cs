@@ -1,49 +1,70 @@
 #if NETCORE31
+using System.Net;
+using MetingJS.Server.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-#elif NETCORE21
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-#endif
-
 #if LINUX
 using System.IO;
 #endif
 
 namespace MetingJS.Server
 {
-	public class Program
-	{
-#if NETCORE21
+    public class Program
+    {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-                WebHost.CreateDefaultBuilder(args)
-                       .UseStartup<Startup>();
-#elif NETCORE31
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var appSettings = new AppSettings();
 
-		public static void Main(string[] args)
-		{
-			CreateHostBuilder(args).Build().Run();
-		}
-
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
-				.ConfigureWebHostDefaults(webBuilder =>
-				{
-					webBuilder.UseStartup<Startup>().ConfigureKestrel((context, options) =>
-					{
+            return Host.CreateDefaultBuilder(args)
+                       .ConfigureAppConfiguration((context, builder) =>
+                        {
+                            var env = context.HostingEnvironment;
+                            builder.AddJsonFile("appsettings.json", true, true)
+                                   .AddYamlFile("appsettings.yml", true, true)
+                                   .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+                                   .AddJsonFile($"appsettings.{env.EnvironmentName}.yml", true);
+                            appSettings = new AppSettings(builder.Build());
+                        })
+                       .ConfigureWebHostDefaults(webBuilder =>
+                        {
+                            webBuilder.ConfigureKestrel(options =>
+                            {
+                                var ks = appSettings.KestrelSettings;
 #if LINUX
-                        if (File.Exists("/tmp/metingJS.Server.sock")) File.Delete("/tmp/metingJS.Server.sock");
-                        options.ListenUnixSocket("/tmp/metingJS.Server.sock");
+                                if (ks.UnixSocketPath.Length > 0)
+                                    foreach (var path in ks.UnixSocketPath)
+                                    {
+                                        if (File.Exists(path)) File.Delete(path);
+                                        options.ListenUnixSocket(path);
+                                    }
 #endif
-					});
-				});
-#endif
-	}
-
+                                if (ks.Port.Length > 0)
+                                    foreach (var port in ks.Port)
+                                        options.Listen(IPAddress.Loopback, port);
+                            }).UseStartup<Startup>();
+                        });
+        }
+    }
 }
+#endif
 
+#if NETCORE21
+using System;
+
+namespace MetingJS.Server
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            Console.WriteLine("请不要这样启动");
+        }
+    }
+}
+#endif
