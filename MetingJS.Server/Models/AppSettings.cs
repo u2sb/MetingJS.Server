@@ -1,41 +1,52 @@
 using Meting4Net.Core;
-using Microsoft.Extensions.Configuration;
 
-namespace MetingJS.Server.Models
+namespace MetingJS.Server.Models;
+
+public class AppSettings
 {
-    public class AppSettings
+    public AppSettings()
     {
-        public AppSettings() { }
-
-        public AppSettings(IConfiguration configuration)
-        {
-            configuration.Bind(this);
-        }
-
-        public KestrelSettings KestrelSettings { get; set; } = new KestrelSettings();
-
-        public string[] WithOrigins { get; set; }
-        public ServerProvider DefaultServerProvider { get; set; } = ServerProvider.Tencent;
-        public string Url { get; set; }
-        public Replace Replace { get; set; } = new Replace();
     }
 
-    public class Replace
+    public AppSettings(IConfiguration configuration)
     {
-        public string[][] Url { get; set; }
-        public string[][] Pic { get; set; }
+        configuration.Bind(this);
     }
 
-    public class KestrelSettings
-    {
-        /// <summary>
-        ///     服务运行端口
-        /// </summary>
-        public int[] Port { get; set; }
+    public KestrelSettings KestrelSettings { get; set; } = new();
 
-        /// <summary>
-        ///     UnixSocketPath
-        /// </summary>
-        public string[] UnixSocketPath { get; set; }
-    }
+    public List<string> WithOrigins { get; set; }
+    public ServerProvider DefaultServerProvider { get; set; } = ServerProvider.Tencent;
+    public string Url { get; set; }
+    public Replace Replace { get; set; } = new();
+    public Cache Cache { get; set; }
+}
+
+public class Cache
+{
+    public string Directory { get; set; } = "DataBase";
+    public string CacheDataBase { get; set; } = "Caching";
+    public int Base { get; set; } = 120;
+    public int Url { get; set; } = 120;
+    public int Pic { get; set; } = 120;
+    public int Lrc { get; set; } = 43200;
+}
+
+public class Replace
+{
+    public List<List<string>>? Url { get; set; }
+    public List<List<string>>? Pic { get; set; }
+}
+
+public class KestrelSettings
+{
+    /// <summary>
+    ///     服务运行端口
+    /// </summary>
+    public Dictionary<string, List<int>> Listens { get; set; } = new();
+
+    /// <summary>
+    ///     UnixSocketPath
+    /// </summary>
+    public List<string>? UnixSocketPath { get; set; }
 }

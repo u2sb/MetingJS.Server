@@ -1,70 +1,83 @@
-#if NETCORE31
 using System.Net;
+using EasyCaching.LiteDB;
+using LiteDB;
 using MetingJS.Server.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using MetingJS.Server.Utils;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 #if LINUX
-using System.IO;
 #endif
 
-namespace MetingJS.Server
+
+var builder = WebApplication.CreateBuilder(args);
+var appSettings = builder.Configuration.Get<AppSettings>();
+if (!Directory.Exists(appSettings.Cache.Directory)) Directory.CreateDirectory(appSettings.Cache.Directory);
+
+builder.WebHost.ConfigureKestrel(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    var ks = appSettings.KestrelSettings;
+    if (ks.Listens.Count > 0)
+        foreach (var listen in ks.Listens)
+            if (IPAddress.TryParse(listen.Key, out var ip))
+                foreach (var port in listen.Value)
+                    options.Listen(ip, port, op => { op.Protocols = HttpProtocols.Http1AndHttp2AndHttp3; });
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var appSettings = new AppSettings();
-
-            return Host.CreateDefaultBuilder(args)
-                       .ConfigureAppConfiguration((context, builder) =>
-                        {
-                            var env = context.HostingEnvironment;
-                            builder.AddJsonFile("appsettings.json", true, true)
-                                   .AddYamlFile("appsettings.yml", true, true)
-                                   .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
-                                   .AddJsonFile($"appsettings.{env.EnvironmentName}.yml", true);
-                            appSettings = new AppSettings(builder.Build());
-                        })
-                       .ConfigureWebHostDefaults(webBuilder =>
-                        {
-                            webBuilder.ConfigureKestrel(options =>
-                            {
-                                var ks = appSettings.KestrelSettings;
 #if LINUX
-                                if (ks.UnixSocketPath.Length > 0)
-                                    foreach (var path in ks.UnixSocketPath)
-                                    {
-                                        if (File.Exists(path)) File.Delete(path);
-                                        options.ListenUnixSocket(path);
-                                    }
-#endif
-                                if (ks.Port.Length > 0)
-                                    foreach (var port in ks.Port)
-                                        options.Listen(IPAddress.Loopback, port);
-                            }).UseStartup<Startup>();
-                        });
-        }
-    }
-}
-#endif
-
-#if NETCORE21
-using System;
-
-namespace MetingJS.Server
-{
-    public class Program
-    {
-        public static void Main(string[] args)
+    if (ks.UnixSocketPath?.Count > 0)
+        foreach (var path in ks.UnixSocketPath)
         {
-            Console.WriteLine("è¯·ä¸è¦è¿™æ ·å¯åŠ¨");
+            if (File.Exists(path)) File.Delete(path);
+            options.ListenUnixSocket(path, op => { op.Protocols = HttpProtocols.Http1AndHttp2AndHttp3; });
         }
-    }
-}
 #endif
+});
+
+var services = builder.Services;
+
+
+// ×ª½ÓÍ·£¬´úÀí
+services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
+// ¿çÓò
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder => builder.SetIsOriginAllowedToAllowWildcardSubdomains()
+        .WithOrigins(appSettings.WithOrigins.ToArray())
+        .WithMethods("GET", "POST", "OPTIONS")
+        .AllowAnyHeader());
+});
+
+// »º´æ
+services.AddEasyCaching(options =>
+{
+    options.UseLiteDB(config =>
+    {
+        config.DBConfig = new LiteDBDBOptions
+        {
+            ConnectionType = ConnectionType.Direct,
+            FilePath = appSettings.Cache.Directory,
+            FileName = appSettings.Cache.CacheDataBase
+        };
+    }, "LiteDb");
+});
+
+services.AddSingleton(appSettings);
+services.AddSingleton<CacheLiteDb>();
+services.AddScoped<Meting>();
+services.AddControllers();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+app.UseCors();
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+app.Run();
